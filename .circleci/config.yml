@@ -1,0 +1,41 @@
+version: 2.1
+executors:
+  go:
+    working_directory: /go/src/github.com/ryosan-470/slackctl
+    docker:
+      - image: circleci/golang:1.11
+    environment:
+      - GO111MODULE: "on"
+
+commands:
+  prepare_go:
+    description: "Vendoring go modules with CircleCI caches"
+    steps:
+      - restore_cache:
+          name: Restore go modules cache
+          keys:
+            - v1-mod-{{ checksum "go.mod" }}
+      - run:
+          name: Vendoring
+          command: go mod download
+      - save_cache:
+          name: Save go modules cache
+          key: v1-mod-{{ checksum "go.mod" }}
+          paths:
+            - /go/pkg/mod/cache
+
+jobs:
+  test:
+    executor: go
+    steps:
+      - checkout
+      - prepare_go
+      - run:
+          name: Run tests
+          command: go test ./...
+
+workflows:
+  version: 2
+  citest:
+    jobs:
+      - test
