@@ -1,22 +1,44 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/nlopes/slack"
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "slackctl",
-	Short: "slackctl is a management tool for Slack using CLI",
-	Run: func(cmd *cobra.Command, args []string) {
-	},
+var api *slack.Client
+
+func init() {
+	cobra.OnInitialize(initConfig)
+}
+
+func NewCmdRoot() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "slackctl",
+		Short: "slackctl is a management tool for Slack using CLI",
+		Long:  "slackctl is a management tool for Slack using CLI",
+		Run:   runHelp,
+	}
+	cmd.AddCommand(NewCmdUsers())
+	return cmd
+}
+
+func runHelp(cmd *cobra.Command, args []string) {
+	// snip
+}
+
+func initConfig() {
+	token := os.Getenv("SLACK_TOKEN")
+	api = slack.New(token)
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+	cmd := NewCmdRoot()
+	cmd.SetOutput(os.Stdout)
+	if err := cmd.Execute(); err != nil {
+		cmd.SetOutput(os.Stderr)
+		cmd.Println(err)
 		os.Exit(1)
 	}
 }
