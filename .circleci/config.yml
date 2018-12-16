@@ -32,7 +32,10 @@ jobs:
       - prepare_go
       - run:
           name: Run tests
-          command: go test ./...
+          command: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+      - run:
+          name: Submit report to Codecov
+          command: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2
