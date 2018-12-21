@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/ryosan-470/slackctl
+gazelle(name = "gazelle")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/ryosan-470/slackctl",
+    visibility = ["//visibility:private"],
+    deps = ["//cmd:go_default_library"],
+)
+
+go_binary(
+    name = "slackctl",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
