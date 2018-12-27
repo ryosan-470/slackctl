@@ -29,6 +29,8 @@ func SubCmdUserList() *cobra.Command {
 			users, _ := api.GetUsers()
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"Name", "RealName", "ID", "IsBot", "IsAdmin"})
+			table.SetBorder(false)
+			table.SetRowLine(false)
 
 			for _, user := range users {
 				d := []string{
