@@ -21,6 +21,7 @@ func NewCmdRoot() *cobra.Command {
 		Run:   runHelp,
 	}
 	cmd.AddCommand(NewCmdUsers())
+	cmd.AddCommand(NewShowVersion())
 	return cmd
 }
 

@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "root.go",
         "users.go",
+        "version.go",
     ],
     importpath = "github.com/ryosan-470/slackctl/cmd",
     visibility = ["//visibility:public"],
