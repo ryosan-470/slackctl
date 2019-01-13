@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"io"
 	"os"
 
 	"github.com/nlopes/slack"
@@ -34,12 +35,12 @@ func initConfig() {
 	api = slack.New(token)
 }
 
-func Execute() {
-	cmd := NewCmdRoot()
-	cmd.SetOutput(os.Stdout)
+func Execute(cmd *cobra.Command, stdout, stderr io.Writer) error {
+	cmd.SetOutput(stdout)
 	if err := cmd.Execute(); err != nil {
-		cmd.SetOutput(os.Stderr)
+		cmd.SetOutput(stderr)
 		cmd.Println(err)
-		os.Exit(1)
+		return err
 	}
+	return nil
 }

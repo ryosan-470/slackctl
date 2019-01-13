@@ -1,7 +1,14 @@
 package main
 
-import "github.com/ryosan-470/slackctl/cmd"
+import (
+	"os"
+
+	"github.com/ryosan-470/slackctl/cmd"
+)
 
 func main() {
-	cmd.Execute()
+	rootCmd := cmd.NewCmdRoot()
+	if err := cmd.Execute(rootCmd, os.Stdout, os.Stderr); err != nil {
+		os.Exit(1)
+	}
 }
