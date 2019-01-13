@@ -1,11 +1,14 @@
 version: 2.1
 executors:
   go:
-    working_directory: /go/src/github.com/ryosan-470/slackctl
     docker:
       - image: circleci/golang:1.11
     environment:
       - GO111MODULE: "on"
+
+  bazel:
+    docker:
+      - image: l.gcr.io/google/bazel:0.21.0
 
 commands:
   prepare_go:
@@ -37,8 +40,20 @@ jobs:
           name: Submit report to Codecov
           command: bash <(curl -s https://codecov.io/bash)
 
+  bazeltest:
+    executor: bazel
+    steps:
+      - checkout
+      - run:
+          name: Run test using bazel
+          command: |
+            bazel test --nokeep_state_after_build --test_output=errors --features=race //...
+
 workflows:
   version: 2
   citest:
     jobs:
       - test
+  cibazeltest:
+    jobs:
+      - bazeltest
