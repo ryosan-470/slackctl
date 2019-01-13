@@ -23,6 +23,7 @@ func NewCmdRoot() *cobra.Command {
 	}
 	cmd.AddCommand(NewCmdUsers())
 	cmd.AddCommand(NewShowVersion())
+	cmd.AddCommand(NewCmdAuth())
 	return cmd
 }
 
