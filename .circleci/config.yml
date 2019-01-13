@@ -44,10 +44,19 @@ jobs:
     executor: bazel
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-bazel-test-cache-{{ .Branch }}-
+            - v1-bazel-test-cache-master-
+            - v1-bazel-test-cache-
       - run:
           name: Run test using bazel
           command: |
-            bazel test --nokeep_state_after_build --test_output=errors --features=race //...
+            bazel test --disk_cache=/tmp/bazeltest/ --features=race //...
+      - save_cache:
+          key: v1-bazel-test-cache-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /tmp/bazeltest
 
 workflows:
   version: 2
