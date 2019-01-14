@@ -60,8 +60,8 @@ go_repository(
 
 go_repository(
     name = "com_github_nlopes_slack",
+    commit = "5911c620bb31338e391032c7b4032394beda330a",
     importpath = "github.com/nlopes/slack",
-    tag = "v0.4.0",
 )
 
 go_repository(
