@@ -33,10 +33,11 @@ API Reference is https://api.slack.com/methods/auth.test`,
 }
 
 func ShowAuthTest(c *cobra.Command, args []string) error {
-	_, err := api.AuthTest()
+	response, err := api.AuthTest()
 	if err != nil {
 		return fmt.Errorf("Calling auth.test is failed: %v", err)
 	}
-	c.Println("ok")
+
+	c.Printf("user: %s\nurl: %s\n", response.User, response.URL)
 	return nil
 }

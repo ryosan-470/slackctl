@@ -33,7 +33,7 @@ func runHelp(cmd *cobra.Command, args []string) {
 
 func initConfig() {
 	token := os.Getenv("SLACK_TOKEN")
-	api = slack.New(token)
+	api = slack.New(token, slack.OptionDebug(true))
 }
 
 func Execute(cmd *cobra.Command, stdout, stderr io.Writer) error {
