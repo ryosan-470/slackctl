@@ -58,11 +58,23 @@ jobs:
           paths:
             - /tmp/bazeltest
 
+  reviewdog:
+    executor: go
+    environment:
+      - REVIEWDOG_VERSION: "0.9.11"
+    steps:
+      - checkout
+      - prepare_go
+      - run: curl -fSL https://github.com/haya14busa/reviewdog/releases/download/$REVIEWDOG_VERSION/reviewdog_linux_amd64 -o reviewdog && chmod +x ./reviewdog
+      - run: go vet ./... 2>&1 | ./reviewdog -f=govet -reporter=github-pr-check
+
 workflows:
   version: 2
   citest:
     jobs:
       - test
-  cibazeltest:
-    jobs:
       - bazeltest
+      - reviewdog:
+          requires:
+            - test
+            - bazeltest
