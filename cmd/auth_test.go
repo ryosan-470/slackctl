@@ -2,41 +2,53 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"testing"
-
-	"github.com/nlopes/slack"
 )
 
 func TestSubCmdAuthTest(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `{
+	testCases := []struct {
+		jsonTxt  string
+		expected string
+		err      string
+	}{
+		{
+			jsonTxt: `{
     "ok": true,
     "url": "https:\/\/example.slack.com\/",
     "team": "example",
     "user": "example",
     "team_id": "T3A1K77EH",
     "user_id": "U39SENP7D"
-}`)
-	}))
-	defer ts.Close()
-
-	slack.APIURL = fmt.Sprintf("%s/api/", ts.URL)
+}`,
+			expected: fmt.Sprintf("user: example\nurl: https://example.slack.com/\n"),
+			err:      "",
+		},
+		{
+			jsonTxt: `{
+    "ok": false,
+    "error": "invalid_auth"
+}`,
+			expected: "",
+			err:      "Calling auth.test is failed: invalid_auth",
+		},
+	}
 
 	subCmdAuthTest := SubCmdAuthTest()
-	stdout, stderr, err := executeCommand(subCmdAuthTest, "auth", "test")
-	if err != nil {
-		t.Fatalf("Execute error: %v", err)
-	}
+	for i, testCase := range testCases {
+		ts := dummySlackAPIServer(testCase.jsonTxt)
+		defer ts.Close()
 
-	expected := fmt.Sprintf("user: example\nurl: https://example.slack.com/\n")
+		stdout, stderr, err := executeCommand(subCmdAuthTest, "auth", "test")
+		if err != nil && testCase.err != err.Error() {
+			t.Errorf("got: %v, but want %v", err, testCase.err)
+		}
 
-	if stdout != expected {
-		t.Errorf("got stdout and expected output is not equal\ngot: %s\nexpected: %s\n", stdout, expected)
-	}
+		if stdout != testCase.expected {
+			t.Errorf("testCases[%d] got stdout and expected output is not equal\ngot: %s\nexpected: %s\n", i, stdout, testCase.expected)
+		}
 
-	if len(stderr) != 0 {
-		t.Errorf("expect stderr is nothing but got:\n%s", stderr)
+		if len(stderr) != 0 {
+			t.Errorf("expect stderr is nothing but got:\n%s", stderr)
+		}
 	}
 }
