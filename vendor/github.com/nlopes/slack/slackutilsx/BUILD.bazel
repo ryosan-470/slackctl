@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["slackutilsx.go"],
+    importmap = "github.com/ryosan-470/slackctl/vendor/github.com/nlopes/slack/slackutilsx",
+    importpath = "github.com/nlopes/slack/slackutilsx",
+    visibility = ["//visibility:public"],
+)
